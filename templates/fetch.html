@@ -1,0 +1,13 @@
+{% set i = 0%} {% for quote in quotes %} {% set i = i+1%}
+<tr>
+    <td>
+        <strong>{{i}}</strong>
+    </td>
+    <td>
+        <span class="glyphicon glyphicon-chevron-up"></span><a href="{{quote.uri}}" class="text-news" target="_blank">{{quote.quote}}</a> - <abbr title="{{quote.uri}}" class="text-muted" style="font-size: 8.5px">{{quote.short_uri}}</abbr>
+        <p class="text-info" style="font-size: 9px">
+             Puan: {{quote.rate}} | Ekleyen: {{quote.creator}} | Eklenme tarihi: {{quote.created}}
+        </p>
+    </td>
+</tr>
+{% endfor %}
