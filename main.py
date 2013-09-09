@@ -6,6 +6,7 @@ import datetime
 import urlparse
 from webapp2_extras import auth
 from webapp2_extras import sessions
+from webapp2_extras import users
 from google.appengine.datastore.datastore_query import Cursor
 from webapp2_extras.auth import InvalidAuthIdError
 from webapp2_extras.auth import InvalidPasswordError
@@ -29,63 +30,63 @@ config = {
 #####################################################
 
 class BaseHandler(webapp2.RequestHandler):
-  @webapp2.cached_property
-  def auth(self):
-    """Shortcut to access the auth instance as a property."""
-    return auth.get_auth()
+    @webapp2.cached_property
+    def auth(self):
+        """Shortcut to access the auth instance as a property."""
+        return auth.get_auth()
 
-  @webapp2.cached_property
-  def user_info(self):
-    """Shortcut to access a subset of the user attributes that are stored
-    in the session.
+    @webapp2.cached_property
+    def user_info(self):
+        """Shortcut to access a subset of the user attributes that are stored
+        in the session.
 
-    The list of attributes to store in the session is specified in
-      config['webapp2_extras.auth']['user_attributes'].
-    :returns
-      A dictionary with most user information
-    """
-    return self.auth.get_user_by_session()
+        The list of attributes to store in the session is specified in
+          config['webapp2_extras.auth']['user_attributes'].
+        :returns
+          A dictionary with most user information
+        """
+        return self.auth.get_user_by_session()
 
-  @webapp2.cached_property
-  def user(self):
-    """Shortcut to access the current logged in user.
+    @webapp2.cached_property
+    def user(self):
+        """Shortcut to access the current logged in user.
 
-    Unlike user_info, it fetches information from the persistence layer and
-    returns an instance of the underlying model.
+        Unlike user_info, it fetches information from the persistence layer and
+        returns an instance of the underlying model.
 
-    :returns
-      The instance of the user model associated to the logged in user.
-    """
-    u = self.user_info
-    return self.user_model.get_by_id(u['user_id']) if u else None
+        :returns
+          The instance of the user model associated to the logged in user.
+        """
+        u = self.user_info
+        return self.user_model.get_by_id(u['user_id']) if u else None
 
-  @webapp2.cached_property
-  def user_model(self):
-    """Returns the implementation of the user model.
+    @webapp2.cached_property
+    def user_model(self):
+        """Returns the implementation of the user model.
 
-    It is consistent with config['webapp2_extras.auth']['user_model'], if set.
-    """
-    return self.auth.store.user_model
+        It is consistent with config['webapp2_extras.auth']['user_model'], if set.
+         """
+        return self.auth.store.user_model
 
-  @webapp2.cached_property
-  def session(self):
+    @webapp2.cached_property
+    def session(self):
       """Shortcut to access the current session."""
       return self.session_store.get_session(backend="datastore")
 
-  def render_template(self, view_filename, params={}):
-    user = self.user_info
-    params['user'] = user
-    template = JINJA_ENVIRONMENT.get_template(view_filename)
-    self.response.write(template.render(params))
+    def render_template(self, view_filename, params={}):
+        user = self.user_info
+        params['user'] = user
+        template = JINJA_ENVIRONMENT.get_template(view_filename)
+        self.response.write(template.render(params))
 
-  def display_message(self, params):
-    """Utility function to display a template with a simple message."""
-    quotes = mymodal.Quote.query()
-    packed_quotes = quotes.iter(offset=0, limit=25)
-    params['quotes']=packed_quotes
-    self.render_template('templates/news.html', params)
+    def display_message(self, params):
+        """Utility function to display a template with a simple message."""
+        quotes = mymodal.Quote.query()
+        packed_quotes = quotes.iter(offset=0, limit=25)
+        params['quotes']=packed_quotes
+        self.render_template('templates/news.html', params)
 
-  # this is needed for webapp2 sessions to work
+  #this is needed for webapp2 sessions to work
     def dispatch(self):
         # Get a session store for this request.
         self.session_store = sessions.get_store(request=self.request)
@@ -101,11 +102,13 @@ class BaseHandler(webapp2.RequestHandler):
 #####################################################
 class FetchJsonHandler(BaseHandler):
     def get(self):
-        page=self.request.get('page')
+        page = self.request.get('page')
+        if page == '':
+            page = 1
         curs = Cursor(urlsafe=self.request.get('cursor'))
         quotes = mymodal.Quote.query()
         packed_quotes, next_curs, more = quotes.fetch_page(25, start_cursor=curs)
-        template_values = {'curs': next_curs.urlsafe(),
+        template_values = {'cursor': next_curs.urlsafe(),
                            'more': more,
                            'page':page,
                            'elements':self.ndb_to_dict(packed_quotes)}
@@ -120,6 +123,8 @@ class FetchJsonHandler(BaseHandler):
 class FetchHandler(BaseHandler):
     def get(self):
         page = self.request.get('page')
+        if not page:
+            page = 1
         curs = Cursor(urlsafe=self.request.get('cursor'))
         quotes = mymodal.Quote.query()
         packed_quotes, next_curs, more = quotes.fetch_page(25, start_cursor=curs)
@@ -127,8 +132,6 @@ class FetchHandler(BaseHandler):
                            'more': more,
                            'page':page,
                            'quotes':packed_quotes}
-        template = JINJA_ENVIRONMENT.get_template(template_values)
-        template_values=json.encode(template_values)
         self.render_template('/templates/fetch.html', template_values)
 
 
@@ -140,6 +143,7 @@ class MainHandler(BaseHandler):
 
 
 class AdditionHandler(BaseHandler):
+    @users.user_required
     def post(self):
         title = self.request.get('title')
         url = self.request.get('url')
@@ -202,7 +206,7 @@ class SignupHandler(BaseHandler):
 
 
 class LogoutHandler(BaseHandler):
-      def get(self):
+    def get(self):
         self.auth.unset_session()
         self.redirect(self.uri_for('home'))
 

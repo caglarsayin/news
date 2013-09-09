@@ -1,65 +1,38 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>{{title}}</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Bootstrap -->
-<link href="css/bootstrap.css" rel="stylesheet" media="screen">
-<link href="css/sticky-footer-navbar.css" rel="stylesheet">
-<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-<!--[if lt IE 9]>
-      <script src="../../assets/js/html5shiv.js"></script>
-      <script src="../../assets/js/respond.min.js"></script>
-    <![endif]-->
-</head>
+{% include 'templates/header.html' %}
 <body>
 <div id="wrap">
-	<div class="navbar navbar-default navbar-fixed-top">
-		<div class="container">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				</button>
-				<a class="navbar-brand" href="#">Çiftsarmal Haber</a>
-			</div>
-			<div class="collapse navbar-collapse">
-				<ul class="nav navbar-nav">
-					<li class="active"><a href="#">Gündem</a></li>
-					<li><a href="#kose_yazilari">Köşeyazıları</a></li>
-					<li><a href="#bilim">Bilim</a></li>
-					<li><a href="#ekonomi">Ekonomi</a></li>
-					<li><a href="#cevre">Çevre</a></li>
-					<li><a href="#bloglar">Bloglar</a></li>
-				</ul>
-				<ul class="nav navbar-nav navbar-right">
-                    {% if not user%}<li><a data-toggle="modal" href="#giris">Giriş</a></li> {% else%}
-                        <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{user.name}} <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                          <li><a data-toggle="modal" href="#ekle" class="">Ekle</a></li>
-                          <li><a href="/logout">Cik</a></li>
-                        </ul>
-                      </li>{% endif%}
-				</ul>
-			</div>
-			<!--/.nav-collapse -->
+	 {% include 'templates/navbar.html' %}
+	<div class="container" style="padding-top: 60px;">
+		 {% if success %}
+		<div class="alert alert-success">
+			<strong>Hey! {{success}}</strong>
 		</div>
-	</div>
-    <div class="container" style="padding-top: 60px;">
-        {% if success %}<div class="alert alert-success"><strong>Hey! {{success}}</strong></div>{% endif %}
-        {% if info %}<div class="alert alert-info"><strong>Bilgi</strong>{{info}}</div>{% endif %}
-        {% if warning %}<div class="alert alert-warning"><strong>Uyari</strong>{{warning}}</div>{% endif %}
-        {% if error %}<div class="alert alert-danger"><strong>Hata</strong>{{error}}</div>{% endif %}
+		{% endif %}
+        {% if info %}
+		<div class="alert alert-info">
+			<strong>Bilgi</strong>{{info}}
+		</div>
+		{% endif %}
+        {% if warning %}
+		<div class="alert alert-warning">
+			<strong>Uyari</strong>{{warning}}
+		</div>
+		{% endif %}
+        {% if error %}
+		<div class="alert alert-danger">
+			<strong>Hata</strong>{{error}}
+		</div>
+		{% endif %}
 		<ul id="myTab" class="nav nav-tabs nav-justified">
-            <li class="active"><a href="#trendler" data-toggle="tab">Trendler </a></li>
-			<li><a href="#yeniler" data-toggle="tab">Yeni Eklenenler</a></li>
-			<li><a href="#iyiler" data-toggle="tab">Haftanın En İyileri </a></li>
-			<li><a href="#secmeler" data-toggle="tab">Seçilenler</a></li>
+			<li class="active"><a href="#trendler" data-toggle="tab" id=trendler_tab>Trendler </a></li>
+			<li><a href="#yeniler" data-toggle="tab" id="yeniler_tab">Yeni Eklenenler</a></li>
+			<li><a href="#iyiler" data-toggle="tab" id="iyiler_tab">Haftanın En İyileri </a></li>
+			<li><a href="#secmeler" data-toggle="tab" id="secilenler_tab">Seçilenler</a></li>
 		</ul>
 		<div class="tab-content">
-            <div class="tab-pane fade active in" id="trendler">
+			<div class="tab-pane fade active in" id="trendler">
 				<table class="table table-hover table-striped">
 				<thead>
 				<tr>
@@ -72,28 +45,22 @@
 				<tbody id="trendler_body">
 				</tbody>
 				</table>
-                {% if more %}
-				<ul class="pager">
-					<li class="prev"><a href="/?cursor={{curs}}&page={{page+1}}">Daha Fazla</a></li>
-				</ul>
-                {% endif %}
+				<button type="button" class="btn btn-default" disabled=1>Daha Fazla...</button>
 			</div>
-			<div class="tab-pane fade" id="yeniler">
+			<div class="tab-pane fade" id="yeniler" data-template>
 				<table class="table table-hover table-striped">
 				<thead>
 				<tr>
-					<th></th>
-					<th></th>
+					<th>
+					</th>
+					<th>
+					</th>
 				</tr>
 				</thead>
 				<tbody id="yeniler_body">
-
 				</tbody>
 				</table>
-				<ul class="pager">
-					<li class="previous disabled"><a href="#" style="margin-left:400px">&larr; Onceki Sayfa</a></li>
-					<li class="next"><a href="#" style="margin-right: 400px">Sonraki Sayfa &rarr;</a></li>
-				</ul>
+				<button type="button" class="btn btn-default" disabled=1>Daha Fazla...</button>
 			</div>
 			<div class="tab-pane fade" id="iyiler">
 				<table class="table table-hover table-striped">
@@ -105,26 +72,10 @@
 					</th>
 				</tr>
 				</thead>
-				<tbody>
-				 {% set i = 0%} {% for quote in quotes %} {% set i = i+1%}
-				<tr>
-					<td>
-						<strong>{{i}}</strong>
-					</td>
-					<td>
-						<span class="glyphicon glyphicon-chevron-up"></span><a href="{{quote.uri}}" class="text-news" target="_blank">{{quote.quote}}</a> - <abbr title="{{quote.uri}}" class="text-muted" style="font-size: 8.5px">{{quote.short_uri}}</abbr>
-						<p class="text-info" style="font-size: 9px">
-							 Puan: {{quote.rate}} | Ekleyen: {{quote.creator}} | Eklenme tarihi: {{quote.created}}
-						</p>
-					</td>
-				</tr>
-				 {% endfor %}
+				<tbody id="iyiler_body">
 				</tbody>
 				</table>
-				<ul class="pager">
-					<li class="previous disabled"><a href="#" style="margin-left:400px">&larr; Onceki Sayfa</a></li>
-					<li class="next"><a href="#" style="margin-right: 400px">Sonraki Sayfa &rarr;</a></li>
-				</ul>
+				<button type="button" class="btn btn-default" disabled=1>Daha Fazla...</button>
 			</div>
 			<div class="tab-pane fade" id="secmeler">
 				<table class="table table-hover table-striped">
@@ -136,156 +87,18 @@
 					</th>
 				</tr>
 				</thead>
-				<tbody>
-				 {% set i = 0%} {% for quote in quotes %} {% set i = i+1%}
-				<tr>
-					<td>
-						<strong>{{i}}</strong>
-					</td>
-					<td>
-						<span class="glyphicon glyphicon-chevron-up"></span><a href="{{quote.uri}}" class="text-news" target="_blank">{{quote.quote}}</a> - <abbr title="{{quote.uri}}" class="text-muted" style="font-size: 8.5px">{{quote.short_uri}}</abbr>
-						<p class="text-info" style="font-size: 9px">
-							 Puan: {{quote.rate}} | Ekleyen: {{quote.creator}} | Eklenme tarihi: {{quote.created}}
-						</p>
-					</td>
-				</tr>
-				 {% endfor %}
+				<tbody id="iyiler_body">
 				</tbody>
 				</table>
-				<ul class="pager">
-					<li class="previous disabled"><a href="#" style="margin-left:400px">&larr; Onceki Sayfa</a></li>
-					<li class="next"><a href="#" style="margin-right: 400px">Sonraki Sayfa &rarr;</a></li>
-				</ul>
+				<button type="button" class="btn btn-default" disabled=1>Daha Fazla...</bu
 			</div>
 		</div>
 	</div>
 </div>
+<!-- Modals -->
+ {% include 'templates/modals.html'%}
 <!-- Footer -->
-<div id="footer">
-	<div class="container">
-		<div class="row">
-			<div class="col-md-8">
-				<p class="text-muted credit">
-					<a href="http://martinbean.co.uk">CiftSarmal</a> | <a href="http://martinbean.co.uk">Ciftsarmal Hakkında</a> | <a href="http://martinbean.co.uk">Bizimle Çalışın</a> | <a href="http://martinbean.co.uk">Hizmetlerimiz</a> | <a href="http://martinbean.co.uk">Iletisim</a> .
-				</p>
-				<p class="text-muted credit">
-					<a href="http://martinbean.co.uk">Kullanim Koşulları</a> | <a href="http://martinbean.co.uk">Gizlilik Sözleşmesi</a> | <a href="http://martinbean.co.uk">Sik Sorulan Sorular</a>.
-				</p>
-			</div>
-			<div class="col-md-4">
-				<img src="./icons/Facebook.png" alt="Facebook" class="img-rounded pull-right" style="margin: 0 10px">
-				<img src="./icons/Twitter.png" alt="Twitter" class="img-rounded pull-right" style="margin: 0 10px">
-			</div>
-		</div>
-	</div>
-</div>
-<!-- ./Footer -->
-<!-- Modal-->
-<div class="modal fade" id="giris" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Üye Girişi</h4>
-            </div>
-            <div class="modal-body">
-                <form id="girisf" role="form" action="/login" method="post" data-remote="true">
-                    <div class="form-group">
-                        <label for="username">Kullanici Adi:</label>
-                        <input name="username" type="text" class="form-control" id="username" placeholder="Kullanici Adi Buraya :)">
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Sifre:</label>
-                        <input name="password" type="password" class="form-control" id="password" placeholder="Password">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button id="giris_button" type="button" class="btn btn-default">Giris</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->
-
-<!-- Modal-->
-<div class="modal fade" id="ekle" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Üye Girişi</h4>
-            </div>
-            <div class="modal-body">
-                <form id="eklef" role="form" action="/addit" method="post" data-remote="true">
-                    <div class="form-group">
-                        <label for="title">Başlık</label>
-                        <input name="title" type="text" id="title" class="form-control" placeholder="Başlık Girin...">
-                    </div>
-                    <div class="form-group">
-                        <label for="url">URL Adress</label>
-                        <input name="url" id="url" type="url" class="form-control" placeholder="URL Girin">
-                    </div>
-                    <div class="form-group">
-                    <label for="title">Kategori</label>
-                    <select name="category" class="form-control">
-                      <option value="1">Gündem</option>
-                      <option value="2">Köşeyazıları</option>
-                      <option value="3">Bilim</option>
-                      <option value="4">Ekonomi</option>
-                      <option value="5">Çevre</option>
-                      <option value="6">Bloglar</option>
-                    </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button id="ekle_button" type="button" class="btn btn-default">Giris</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->
-
-
-
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="http://code.jquery.com/jquery.js"></script>
-<!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="js/bootstrap.min.js"></script>
+ {% include 'templates/footer.html' %}
 <!-- Custom Scripts -->
-<script>
-    $(function () {
-    $('#myTab a:first').tab('show')
-  })
-
-</script>
-<script>
-        $('#giris_button').on('click', function(e){
-    // We don't want this to act as a link so cancel the link action
-    e.preventDefault();
-    // Find form and submit it
-    $('#girisf').submit();
-  })
-        $('#ekle_button').on('click', function(e){
-    // We don't want this to act as a link so cancel the link action
-    e.preventDefault();
-    // Find form and submit it
-    $('#eklef').submit();
-  })
-
-$(document).ready(function(){$.get("/fetch",function(data,status){$('#trendler_body').append(data)});});
-
-
-</script>
-
-<!-- Custom Scripts -->
-
 </body>
 </html>

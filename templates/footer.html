@@ -1,0 +1,102 @@
+<div id="footer">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-8">
+				<p class="text-muted credit">
+					<a href="http://martinbean.co.uk">CiftSarmal</a> | <a href="http://martinbean.co.uk">Ciftsarmal Hakkında</a> | <a href="http://martinbean.co.uk">Bizimle Çalışın</a> | <a href="http://martinbean.co.uk">Hizmetlerimiz</a> | <a href="http://martinbean.co.uk">Iletisim</a> .
+				</p>
+				<p class="text-muted credit">
+					<a href="http://martinbean.co.uk">Kullanim Koşulları</a> | <a href="http://martinbean.co.uk">Gizlilik Sözleşmesi</a> | <a href="http://martinbean.co.uk">Sik Sorulan Sorular</a>.
+				</p>
+			</div>
+			<div class="col-md-4">
+				<img src="./icons/Facebook.png" alt="Facebook" class="img-rounded pull-right" style="margin: 0 10px">
+				<img src="./icons/Twitter.png" alt="Twitter" class="img-rounded pull-right" style="margin: 0 10px">
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- Custom Scripts -->
+
+
+
+<script>
+{% if user %}
+    $('#ekle_button').on('click', function(e){
+    // We don't want this to act as a link so cancel the link action
+    e.preventDefault();
+    // Find form and submit it
+    $('#eklef').submit();
+
+});
+
+{% else %}
+    $('#giris_button').on('click', function(e){
+    // We don't want this to act as a link so cancel the link action
+    e.preventDefault();
+    // Find form and submit it
+    $('#girisf').submit();
+  });
+
+{% endif %}
+</script>
+
+
+<script>
+$( "#yeniler" ).data( "settings", { more: 1, page: 1, cursor: '', initialized: false} );
+$( "#trendler" ).data( "settings", { more: 1, page: 1, cursor: '',initialized: false } );
+$( "#iyiler" ).data( "settings", { more: 1, page: 1, cursor: '',initialized: false } );
+$( "#secmeler" ).data( "settings", { more: 1, page: 1, cursor: '',initialized: false } );
+
+function Fetchtotable(address, base)
+{
+$.getJSON(address, function(data) {
+  var items = [];
+  var counter = ((data.page-1)*25)+1
+  $.each(data.elements, function(i, item) {
+      items.push('<tr><td><strong>'+ counter +'</strong></td><td><span class="glyphicon glyphicon-chevron-up"></span><a href="' + item.uri + '" class="text-news" target="_blank">' + item.quote + '</a> - <abbr title="' + item.uri + '" class="text-muted" style="font-size: 8.5px">' + item.short_uri + '</abbr><p class="text-info" style="font-size: 9px">Puan: ' + item.rate + ' | Ekleyen: ' + item.creator + '| Eklenme tarihi: ' + item.created + '</p></td></tr>');
+      counter = (1+counter);
+  });
+  $(base).data("settings").more = data.more;
+  $(base).data("settings").page = data.page;
+  $(base).data("settings").cursor = data.cursor;
+  $("tbody",base).append(items.join(''));
+  if($(base).data("settings").more == 0){
+    $(":button",base).prop('disabled',1);
+};
+});};
+
+function addressmaker(cursor,page){
+    var address = "/jfetch?cursor=" + cursor + "&page=" + page ;
+    return address
+}
+
+$("a[data-toggle='tab']").on('click', function(e){
+    e.preventDefault();
+    var patt1 =  /#[a-z]*/;
+    var base = this.href.match(patt1)[0];
+    if($(base).data("settings").initialized==false){
+    $(base).data("settings").initialized=true;
+    Fetchtotable(addressmaker($(base).data("settings").cursor,$(base).data("settings").page),base);
+    if($(base).data("settings").more == 1){
+        $(":button",base).prop('disabled',0);
+    };
+    }
+});
+
+$(':button','.tab-pane').on('click', function(e){
+    e.preventDefault();
+    var base = "#" + this.parentNode.id;
+    a=Fetchtotable(addressmaker($(base).data("settings").cursor,parseInt($(base).data("settings").page)+1),base);
+});
+
+$(document).ready(function() {
+  // Handler for .ready() called.
+ $("#trendler_tab").click();
+});
+
+</script>
+
+
