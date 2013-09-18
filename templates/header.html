@@ -15,5 +15,23 @@
 <script src="js/bootstrap.min.js"></script>
 <script>
 
+function byId(id) {
+return document.getElementById(id);
+}
+
+function vote(node) {
+var v = node.id.split(/_/);   // {'up', '123'}
+var item = v[1];
+
+// hide arrows
+byId('up_'   + item).style.visibility = 'hidden';
+
+// ping server
+var ping = new Image();
+ping.src = node.href;
+
+return false; // cancel browser nav
+}
+
 </script>
 </head>

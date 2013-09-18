@@ -2,9 +2,9 @@
 <html>
 {% include 'templates/header.html' %}
 <body>
-<div id="wrap">
+<div id="wrap" style="padding: 0">
 	 {% include 'templates/navbar.html' %}
-	<div class="container" style="padding-top: 60px;">
+	<div class="container" style="padding-top: 60px; width: 970px">
 		 {% if success %}
 		<div class="alert alert-success">
 			<strong>Hey! {{success}}</strong>
@@ -26,7 +26,7 @@
 		</div>
 		{% endif %}
 		<ul id="myTab" class="nav nav-tabs nav-justified">
-			<li class="active"><a href="#trendler" data-toggle="tab" id=trendler_tab>Trendler </a></li>
+			<li><a href="#trendler" data-toggle="tab" id=trendler_tab>Trendler </a></li>
 			<li><a href="#yeniler" data-toggle="tab" id="yeniler_tab">Yeni Eklenenler</a></li>
 			<li><a href="#iyiler" data-toggle="tab" id="iyiler_tab">Haftanın En İyileri </a></li>
 			<li><a href="#secmeler" data-toggle="tab" id="secilenler_tab">Seçilenler</a></li>

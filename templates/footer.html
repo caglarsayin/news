@@ -1,12 +1,12 @@
-<div id="footer">
-	<div class="container">
+<div id="footer" style="margin-top: 60px">
+	<div class="container" style="width: 970px">
 		<div class="row">
 			<div class="col-md-8">
 				<p class="text-muted credit">
-					<a href="http://martinbean.co.uk">CiftSarmal</a> | <a href="http://martinbean.co.uk">Ciftsarmal Hakkında</a> | <a href="http://martinbean.co.uk">Bizimle Çalışın</a> | <a href="http://martinbean.co.uk">Hizmetlerimiz</a> | <a href="http://martinbean.co.uk">Iletisim</a> .
+					<a href="http://martinbean.co.uk">ÇiftSarmal</a> | <a href="http://martinbean.co.uk">Çiftsarmal Hakkında</a> | <a href="http://martinbean.co.uk">Bizimle Çalışın</a> | <a href="http://martinbean.co.uk">Hizmetlerimiz</a> | <a href="http://martinbean.co.uk">İletişim</a> .
 				</p>
 				<p class="text-muted credit">
-					<a href="http://martinbean.co.uk">Kullanim Koşulları</a> | <a href="http://martinbean.co.uk">Gizlilik Sözleşmesi</a> | <a href="http://martinbean.co.uk">Sik Sorulan Sorular</a>.
+					<a href="http://martinbean.co.uk">Kullanim Koşulları</a> | <a href="http://martinbean.co.uk">Gizlilik Sözleşmesi</a> | <a href="http://martinbean.co.uk">Sık Sorulan Sorular</a>.
 				</p>
 			</div>
 			<div class="col-md-4">
@@ -45,10 +45,11 @@
 
 
 <script>
-$( "#yeniler" ).data( "settings", { more: 1, page: 1, cursor: '', initialized: false} );
-$( "#trendler" ).data( "settings", { more: 1, page: 1, cursor: '',initialized: false } );
-$( "#iyiler" ).data( "settings", { more: 1, page: 1, cursor: '',initialized: false } );
-$( "#secmeler" ).data( "settings", { more: 1, page: 1, cursor: '',initialized: false } );
+$("body").data("category", "{{slub}}");
+$("#yeniler" ).data( "settings", { more: 1, page: 0, cursor: '', initialized: false} );
+$("#trendler" ).data( "settings", { more: 1, page: 0, cursor: '',initialized: false} );
+$("#iyiler" ).data( "settings", { more: 1, page: 0, cursor: '',initialized: false} );
+$("#secmeler" ).data( "settings", { more: 1, page: 0, cursor: '',initialized: false} );
 
 function Fetchtotable(address, base)
 {
@@ -56,7 +57,7 @@ $.getJSON(address, function(data) {
   var items = [];
   var counter = ((data.page-1)*25)+1
   $.each(data.elements, function(i, item) {
-      items.push('<tr><td><strong>'+ counter +'</strong></td><td><span class="glyphicon glyphicon-chevron-up"></span><a href="' + item.uri + '" class="text-news" target="_blank">' + item.quote + '</a> - <abbr title="' + item.uri + '" class="text-muted" style="font-size: 8.5px">' + item.short_uri + '</abbr><p class="text-info" style="font-size: 9px">Puan: ' + item.rate + ' | Ekleyen: ' + item.creator + '| Eklenme tarihi: ' + item.created + '</p></td></tr>');
+      items.push('<tr><td style="width: 20px;"><strong>'+ counter +'</strong></td><td><a onclick="return vote(this)" id="up_' + item[0] + '"  href="voteup?itemqid=' + item[0] + '"> <img src="/icons/thumbsup.png" border="0" vspace="3" hspace="2" alt="upvote"> </a> - <a href="' + item[1].uri + '" class="text-news" target="_blank">' + item[1].quote + '</a> - <abbr title="' + item[1].uri + '" class="text-muted" style="font-size: 8.5px">' + item[1].short_uri + '</abbr><a href="" style="color: #b94a48;float: right; margin-right: 20px;"><spam class="glyphicon glyphicon-minus-sign"></spam></a><p class="text-info" style="font-size: 9px">Puan: ' + item[1].votesum + ' | Ekleyen: ' + item[1].creator + '| Eklenme tarihi: ' + item[1].created + '</p></td></tr>');
       counter = (1+counter);
   });
   $(base).data("settings").more = data.more;
@@ -68,8 +69,10 @@ $.getJSON(address, function(data) {
 };
 });};
 
-function addressmaker(cursor,page){
-    var address = "/jfetch?cursor=" + cursor + "&page=" + page ;
+function addressmaker(base){
+    cursor = $(base).data("settings").cursor;
+    page = parseInt($(base).data("settings").page) + 1;
+    var address = "/jfetch?cursor=" + cursor + "&page=" + page +"&way=" + $(base).attr('id') + "&cat=" + $('body').data().category;
     return address
 }
 
@@ -79,7 +82,7 @@ $("a[data-toggle='tab']").on('click', function(e){
     var base = this.href.match(patt1)[0];
     if($(base).data("settings").initialized==false){
     $(base).data("settings").initialized=true;
-    Fetchtotable(addressmaker($(base).data("settings").cursor,$(base).data("settings").page),base);
+    Fetchtotable(addressmaker(base),base);
     if($(base).data("settings").more == 1){
         $(":button",base).prop('disabled',0);
     };
@@ -89,14 +92,19 @@ $("a[data-toggle='tab']").on('click', function(e){
 $(':button','.tab-pane').on('click', function(e){
     e.preventDefault();
     var base = "#" + this.parentNode.id;
-    a=Fetchtotable(addressmaker($(base).data("settings").cursor,parseInt($(base).data("settings").page)+1),base);
+    a=Fetchtotable(addressmaker(base),base);
 });
+
 
 $(document).ready(function() {
   // Handler for .ready() called.
+
  $("#trendler_tab").click();
+ var category = '#' + $('body').data().category;
+ $(category).parent().attr('class','active');
 });
 
 </script>
+
 
 

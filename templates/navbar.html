@@ -1,21 +1,21 @@
 <div class="navbar navbar-default navbar-fixed-top">
-		<div class="container">
+		<div class="container" style="width: 970px">
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="#">Çiftsarmal Haber</a>
+				<a class="navbar-brand" href="/">Çiftsarmal Haber</a>
 			</div>
 			<div class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
-					<li class="active"><a href="#">Gündem</a></li>
-					<li><a href="#kose_yazilari">Köşeyazıları</a></li>
-					<li><a href="#bilim">Bilim</a></li>
-					<li><a href="#ekonomi">Ekonomi</a></li>
-					<li><a href="#cevre">Çevre</a></li>
-					<li><a href="#bloglar">Bloglar</a></li>
+					<li><a id="gundem" href="/gundem">Gündem</a></li>
+					<li><a id="koseyazilari" href="/koseyazilari">Köşe Yazıları</a></li>
+					<li><a id="bilim" href="/bilim">Bilim</a></li>
+					<li><a id="ekonomi" href="/ekonomi">Ekonomi</a></li>
+					<li><a id="yasam" href="/yasam">Yaşam</a></li>
+					<li><a id="bloglar" href="/bloglar">Bloglar</a></li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
                     {% if user %}<li class="dropdown">

@@ -19,3 +19,9 @@ indexes:
   - name: rate
   - name: short_uri
   - name: uri
+
+- kind: Quote
+  properties:
+  - name: category
+  - name: rate
+    direction: desc

@@ -1,0 +1,4 @@
+cron:
+- description: daily summary job
+  url: /tasks/trending
+  schedule: every 15 minutes

@@ -2,6 +2,7 @@ from google.appengine.ext import ndb
 import webapp2_extras.appengine.auth.models
 from webapp2_extras import security
 import time
+import urlparse
 
 
 class Quote(ndb.Model):
@@ -17,15 +18,21 @@ class Quote(ndb.Model):
     """
     quote = ndb.StringProperty(required=True)
     uri = ndb.StringProperty()
-    short_uri = ndb.StringProperty()
-    rate = ndb.IntegerProperty(default=0)
-    date_time = ndb.DateTimeProperty(verbose_name=None, auto_now_add=True)
-    created = ndb.StringProperty()
-    click_count = ndb.StringProperty(default=" ")
+    short_uri = ndb.ComputedProperty(lambda self: self.shortener(self.uri))
+    rate = ndb.IntegerProperty(default=0, indexed=True)
+    date_time = ndb.DateTimeProperty(auto_now_add=True, indexed=True)
+    click_count = ndb.IntegerProperty(default=0)
     votesum = ndb.IntegerProperty(default=0)
     creator = ndb.StringProperty()
-    category = ndb.StringProperty()
+    category = ndb.StringProperty(indexed=True)
+    chosen = ndb.BooleanProperty(default=False, indexed=True)
+    created = ndb.ComputedProperty(lambda self: self.date_time.strftime("%x"))
 
+    def shortener(self,url):
+        short_uri = urlparse.urlsplit(url)[1]
+        if short_uri.split('.')[0] == 'www':
+            short_uri = short_uri[4:]
+        return short_uri
 
 
 

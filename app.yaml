@@ -1,12 +1,12 @@
 application: ciftsarmalnews
-version: 2
+version: 3
 runtime: python27
 api_version: 1
 threadsafe: yes
 
 handlers:
 - url: /favicon\.ico
-  static_files: favicon.ico
+  static_files: templates/favicon.ico
   upload: favicon\.ico
 
 - url: /css
@@ -20,6 +20,10 @@ handlers:
 
 - url: /icons
   static_dir: templates/icons
+
+- url: /tasks/.*
+  script: tasks.app
+  login: admin
 
 - url: .*
   script: main.app
